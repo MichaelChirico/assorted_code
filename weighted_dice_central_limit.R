@@ -8,13 +8,13 @@
 #  (could be renormalized to sum to one,
 #   but this doesn't matter--this is
 #   done below)
-x<-c(100,5,9,16,25,36)
+x<-rep(1,6)
 K<-length(x)
 
 #How many dice do you want in the final estimate?
 #  (expressed in log_2, i.e., if you want
 #   2 dice, set NN=1, 4 dice NN=2, 8 dice NN=3, etc.)
-NN<-7 #keep in mind this requires exponentially more
+NN<-10 #keep in mind this requires exponentially more
       #  memory as NN increases... 7 is already high.
 
 #calculated recursively
