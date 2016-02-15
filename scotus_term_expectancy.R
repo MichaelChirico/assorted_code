@@ -38,25 +38,30 @@ cols <- c("Currently serving" = "red",
           "Resignation" = "blue", "Retirement" = "darkgreen")
 
 #regression:
-
 justices[(!alive), summary(reg <<- lm(age_at_death ~ born))]
+
+#Bootstrapped regression coefficient
+BB <- 5000 #replication count
+quantile(replicate(BB, justices[(!alive)
+                         ][sample(.N, rep = TRUE),
+                           lm(age_at_death ~ born)$coefficients["born"]]),
+         c(.005, .025, .05, .95, .975, .995))
 
 birth_range <- data.table(born = justices[ , {x<-range(born); x[1]:x[2]}])
 
 #Bootstrapped CIs
-BB <- 5000 #replication count
 ## formatting magic
 CIs <- as.data.table(t(apply(replicate(
   BB, justices[(!alive)
                ##resample with replacement
                ][sample(.N, rep = TRUE),
-                 ##re-run regression and predict
+                 ##re-run regression andhttp://imgur.com/6TBYuta
                  predict(lm(age_at_death ~ born),
                          birth_range)]),
   1, quantile, c(.025, .05, .95, .975))))[ , born := birth_range$born]
 
 #plot:
-pdf("~/Desktop/scotus.pdf")
+png("~/Desktop/scotus.png")
 justices[ , plot(born, age_at_death, col = cols[reason_left],
                  main = paste0("SCOTUS Justice Life Expectancy\n",
                                "With Bootstrapped CIs"),
@@ -65,6 +70,6 @@ justices[ , plot(born, age_at_death, col = cols[reason_left],
 CIs[ , matplot(born, cbind(`2.5%`, `5%`, `95%`, `97.5%`), add = TRUE,
                lty = 2, lwd = c(1,2,2,1), type = "l", col = "orange")]
 justices[ , abline(reg, col = "orange", lwd = 3)]
-legend("bottomright", horiz = TRUE, pch = 19, cex = .5,
+legend("bottomright", horiz = TRUE, pch = 19, cex = .6,
        col = cols, legend = names(cols),x.intersp=.5)
 dev.off()
