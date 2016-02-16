@@ -194,7 +194,7 @@ justices[(!active), quarter := {
                         right = FALSE, include.lowest = TRUE,
                         labels = paste0(ysq[-5], "-", ysq[-1]))}]
 
-png("~/Desktop/scotus_age_ret_periods.png")
+png("~/Desktop/scotus_age_die_periods.png")
 justices[(!active), mean(age_at_death), by = quarter
          ][ , 
             {barplot(V1, names.arg = quarter,
@@ -203,4 +203,15 @@ justices[(!active), mean(age_at_death), by = quarter
                      col = c("red", "blue", "orange", "darkgreen"),
                      space = 0, xlab = "Year of Birth", yaxt = "n")
               axis(side = 2, at = seq(0, 80, by = 20), las = 2)}]
+dev.off()
+
+png("~/Desktop/scotus_term_length_periods.png")
+justices[(!active), mean(term_length), by = quarter
+         ][ , 
+            {barplot(V1, names.arg = quarter,
+                     main = "SCOTUS Justice Term Length", ylim = c(0, 20),
+                     ylab = "Average Approximate Term Length",
+                     col = c("red", "blue", "orange", "darkgreen"),
+                     space = 0, xlab = "Year of Birth", yaxt = "n")
+              axis(side = 2, at = seq(0, 20, by = 5), las = 2)}]
 dev.off()
