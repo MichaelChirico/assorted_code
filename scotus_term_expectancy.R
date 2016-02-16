@@ -1,12 +1,12 @@
 library(rvest)
 library(data.table)
+set.seed(2259)
 
 wiki <- "https://en.wikipedia.org/wiki/List_of_Justices_of_the_Supreme_Court_of_the_United_States"
 
 #table XPath: //*[@id="mw-content-text"]/table[2]
 
 justices <- html(wiki) %>% html_nodes(xpath = '//*[@id="mw-content-text"]/table[2]') %>%
-  html_attr("style")
   html_table() %>% `[[`(1) %>% setDT()
 
 setnames(justices, c("no","name","state","born_died",
@@ -195,10 +195,12 @@ justices[(!active), quarter := {
                         labels = paste0(ysq[-5], "-", ysq[-1]))}]
 
 png("~/Desktop/scotus_age_ret_periods.png")
-justices[(!active), mean(age_retired), by = quarter
-         ][ , barplot(V1, names.arg = quarter,
-                      main = "SCOTUS Justice Age at Retirement Over Time",
-                      ylab = "Average Approximate Retirement Age",
-                      col = c("red", "blue", "orange", "darkgreen"),
-                      space = 0)]
+justices[(!active), mean(age_at_death), by = quarter
+         ][ , 
+            {barplot(V1, names.arg = quarter,
+                     main = "SCOTUS Justice Age at Death", ylim = c(0, 80),
+                     ylab = "Average Approximate Age at Death",
+                     col = c("red", "blue", "orange", "darkgreen"),
+                     space = 0, xlab = "Year of Birth", yaxt = "n")
+              axis(side = 2, at = seq(0, 80, by = 20), las = 2)}]
 dev.off()
