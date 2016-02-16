@@ -6,6 +6,7 @@ wiki <- "https://en.wikipedia.org/wiki/List_of_Justices_of_the_Supreme_Court_of_
 #table XPath: //*[@id="mw-content-text"]/table[2]
 
 justices <- html(wiki) %>% html_nodes(xpath = '//*[@id="mw-content-text"]/table[2]') %>%
+  html_attr("style")
   html_table() %>% `[[`(1) %>% setDT()
 
 setnames(justices, c("no","name","state","born_died",
@@ -185,4 +186,19 @@ CIs[ , matplot(born, cbind(`2.5%`, `5%`, `95%`, `97.5%`), add = TRUE,
 justices[ , abline(reg, col = "orange", lwd = 3)]
 legend("bottomright", horiz = TRUE, pch = 19, cex = .6,
        col = cols, legend = names(cols),x.intersp=.5)
+dev.off()
+
+# Grouping by quarters of history
+justices[(!active), quarter := {
+  x <- range(born); cut(born, breaks = ysq <- round(seq(x[1], x[2], length.out = 5)),
+                        right = FALSE, include.lowest = TRUE,
+                        labels = paste0(ysq[-5], "-", ysq[-1]))}]
+
+png("~/Desktop/scotus_age_ret_periods.png")
+justices[(!active), mean(age_retired), by = quarter
+         ][ , barplot(V1, names.arg = quarter,
+                      main = "SCOTUS Justice Age at Retirement Over Time",
+                      ylab = "Average Approximate Retirement Age",
+                      col = c("red", "blue", "orange", "darkgreen"),
+                      space = 0)]
 dev.off()
