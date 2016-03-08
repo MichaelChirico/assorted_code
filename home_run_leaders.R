@@ -2,7 +2,9 @@
 
 library(Lahman)
 library(data.table)
+library(animation)
 
+setwd("~/Desktop/")
 data(Batting)
 data(Master)
 setDT(Batting, key = c("playerID", "yearID"))
@@ -35,20 +37,19 @@ Homers[color_map, player_color := i.col, on = "playerID"]
 setkey(Homers, yearID, HR_rank)
 #example year: 1920
 yr0 <- 5 * (Homers[ , min(yearID)] %/% 5)
-yr <- 1920
-Homers[playerID %in% Homers[.(yr, 1:10), playerID] & yearID <= yr,
-       {png("~/Desktop/sample.png")
-         plot_block <- 
-           dcast(.SD, yearID ~ playerID, value.var = "cum_HR")
-         who <- names(plot_block)[-1]
-         cols <- color_map[.(who), col]
-         plot_block[, matplot(yearID, .SD[,-1,with=FALSE], ylab = "Home Runs",
-                              xlab = "Year", las = 1, xaxt = "n",
-                              main = paste0("Top Slugger Trajectories for ", yr),
-                              type = "l", lty = 1, lwd = 3, col = cols)]
-         axis(1, at = seq(yr0, yr, by = 5))
-         legend("topleft", legend = color_map[.(who), player_name],
-                col = cols, lty = 1, lwd = 3)
-         dev.off()}]
-
-                             
+saveGIF(sapply(
+  Homers[ , unique(yearID)],
+  function(yr) 
+    Homers[playerID %in% Homers[.(yr, 1:10), playerID] & yearID <= yr,
+           {plot_block <- 
+             dcast(.SD, yearID ~ playerID, value.var = "cum_HR")
+           who <- names(plot_block)[-1]
+           cols <- color_map[.(who), col]
+           plot_block[, matplot(yearID, .SD[,-1,with=FALSE], ylab = "Home Runs",
+                                xlab = "Year", las = 1, xaxt = "n",
+                                main = paste0("Top Slugger Trajectories for ", yr),
+                                type = "l", lty = 1, lwd = 3, col = cols)]
+           axis(1, at = seq(yr0, yr, by = 5))
+           legend("topleft", legend = color_map[.(who), player_name],
+                  col = cols, lty = 1, lwd = 3)}]),
+  "home_runs_over_time.gif")
