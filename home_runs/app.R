@@ -32,21 +32,6 @@ top_10 <- rbindlist(lapply(
       playerID = playerID[idx <- all_time %in% 1:10],
       HR_rank = all_time[all_time %in% 1:10])}]))
 
-#outdated measures of home run rank
-## can't go year-by-year, since many years
-##   feature _no_ players in the running all-time-top 10
-# Homers[ , HR_rank := 
-#           #1) get frank of cum_HR relative to
-#           #   years yr0 through today
-#           #2) extract only data from today; merge
-#           .SD[Homers[.(yr0:(.BY[[1]])), 
-#                      {all_time <- frank(-cum_HR, ties.method = "min")
-#                      .(playerID[idx <- yearID == .BY[[1]]],
-#                        all_time[idx])}], i.V2, on = c(playerID="V1")],
-#         by = yearID]
-# #Rank among active players
-# Homers[, HR_rank_active := frank(-cum_HR, ties.method = "min"), by = yearID]
-
 #assign fixed colors to players
 ## for reproducibility
 set.seed(102938)
