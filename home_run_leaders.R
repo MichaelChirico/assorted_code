@@ -16,31 +16,59 @@ Homers <- Batting[ , .(HR = sum(HR)), by = .(playerID, yearID)]
 #cumulative homeruns
 Homers[ , cum_HR := cumsum(HR), by = playerID]
 
-#within-year rankings
-Homers[, HR_rank := frank(-cum_HR, ties.method = "min"), by = yearID]
+#up-to-date all-time rankings --
+#  in year T, where was each player ranked
+#  on the all-time list?
+yr0 <- 5 * (Homers[ , min(yearID)] %/% 5)
+setkey(Homers, yearID)
+top_10 <- rbindlist(lapply(
+  all_yr <- Homers[ , unique(yearID)],
+  function(yr)
+    unique(Homers[.(yr0:yr)], by = "playerID", fromLast = TRUE
+           )[, {all_time <- frank(-cum_HR, ties.method = "min")
+           .(yearID = yr,
+             playerID = playerID[idx <- all_time %in% 1:10],
+             HR_rank = all_time[all_time %in% 1:10])}]))
+
+#outdated measures of home run rank
+## can't go year-by-year, since many years
+##   feature _no_ players in the running all-time-top 10
+# Homers[ , HR_rank := 
+#           #1) get frank of cum_HR relative to
+#           #   years yr0 through today
+#           #2) extract only data from today; merge
+#           .SD[Homers[.(yr0:(.BY[[1]])), 
+#                      {all_time <- frank(-cum_HR, ties.method = "min")
+#                      .(playerID[idx <- yearID == .BY[[1]]],
+#                        all_time[idx])}], i.V2, on = c(playerID="V1")],
+#         by = yearID]
+# #Rank among active players
+# Homers[, HR_rank_active := frank(-cum_HR, ties.method = "min"), by = yearID]
 
 #assign fixed colors to players
 ## for reproducibility
 set.seed(102938)
+avail_col <- colors(distinct = TRUE)
+#eliminate grayscale colors as unreadable
+avail_col <- avail_col[!grepl("gray|white", avail_col)]
 color_map <- 
-  data.table(playerID = Homers[HR_rank %in% 1:10, unique(playerID)],
-             key = "playerID")[ , col := sample(colors(), .N)]
+  data.table(playerID = top_10[, unique(playerID)],
+             key = "playerID")[ , col := sample(avail_col, .N)]
 
 #merge in player names
 color_map[Master, player_name := 
             paste(i.nameFirst, i.nameLast), on = "playerID"]
 
 
-Homers[color_map, player_color := i.col, on = "playerID"]
+top_10[color_map, player_color := i.col, on = "playerID"]
 
 #keying for easy extraction
-setkey(Homers, yearID, HR_rank)
-#example year: 1920
-yr0 <- 5 * (Homers[ , min(yearID)] %/% 5)
+setkey(top_10, yearID, HR_rank)
+
 saveGIF(sapply(
-  Homers[ , unique(yearID)],
+  all_yr,
   function(yr) 
-    Homers[playerID %in% Homers[.(yr, 1:10), playerID] & yearID <= yr,
+    Homers[playerID %in% top_10[.(yr, 1:10), playerID] & yearID <= yr,
            {plot_block <- 
              dcast(.SD, yearID ~ playerID, value.var = "cum_HR")
            who <- names(plot_block)[-1]
