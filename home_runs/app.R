@@ -37,8 +37,9 @@ top_10 <- rbindlist(lapply(
 set.seed(102938)
 avail_col <- colors(distinct = TRUE)
 #eliminate grayscale colors as unreadable
-avail_col <- avail_col[!grepl("gray|white|alice|snow", avail_col)]
+avail_col <- avail_col[!grepl("gray|white|alice|snow|corn", avail_col)]
 avail_col <- avail_col[!grepl("lightsteel|lightcyan|lightgold", avail_col)]
+avail_col <- avail_col[!grepl("lavender|mint|lace|beige", avail_col)]
 color_map <- 
   data.table(playerID = top_10[, unique(playerID)],
              key = "playerID")[ , col := sample(avail_col, .N)]
@@ -60,14 +61,18 @@ setkey(Homers, yearID)
 traj_yr <- function(yr) 
   Homers[playerID %in% top_10[.(yr), playerID] & yearID <= yr,
          {plot_block <- 
-           dcast(.SD, yearID ~ playerID, value.var = "cum_HR")
-         who <- names(plot_block)[-1]
+           dcast(.SD, yearID ~ playerID, value.var = "cum_HR"
+           )[ , -1, with = FALSE]
+         setcolorder(plot_block, names(sort(sapply(plot_block, max, 
+                                                   na.rm = TRUE),
+                                            decreasing = TRUE)))
+         who <- names(plot_block)
          cols <- color_map[.(who), col]
-         plot_block[, matplot(yearID, .SD[,-1,with=FALSE], ylab = "Home Runs",
-                              xlab = "Year", las = 1, xaxt = "n", 
-                              xlim = c(min(yearID), yr),
-                              main = paste0("Top Slugger Trajectories for ", yr),
-                              type = "l", lty = 1, lwd = 3, col = cols)]
+         matplot(unique(yearID), plot_block, ylab = "Home Runs",
+                 xlab = "Year", las = 1, xaxt = "n", 
+                 xlim = c(min(yearID), yr),
+                 main = paste0("Top Slugger Trajectories for ", yr),
+                 type = "l", lty = 1, lwd = 3, col = cols)
          axis(1, at = seq(5 * (min(yearID) %/% 5), yr, by = 5))
          legend("topleft", legend = color_map[.(who), player_name],
                 col = cols, lty = 1, lwd = 3)}]
@@ -77,7 +82,7 @@ ui <- shinyUI(fluidPage(
   fluidRow(column(12, plotOutput("trajectory", height = "600px"))),
   fluidRow(column(12, sliderInput("yr", "Year:", width = "100%",
                                   min = Homers[ , min(yearID)],
-                                  max = Homers[ , max(yearID)],
+                                  max = Homers[ , max(yearID)], step = 1,
                                   value = Homers[sample(.N,1), yearID])))
 ))
 
@@ -88,4 +93,3 @@ server <- shinyServer(function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
