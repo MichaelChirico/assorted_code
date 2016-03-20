@@ -4,8 +4,6 @@ library(Lahman)
 #  shinyapps, I had to use the CRAN
 #  version of data.table (don't think
 #  it makes a difference...)
-library(data.table)
-library(animation)
 
 data(Batting)
 data(Master)
