@@ -75,6 +75,7 @@ while (TRUE){
        #  from step to step after each elimination
   data[, 
        if (x <- sort(summary(lm(Ma ~ ., data = .SD))$
+                     #First row is intercept; exclude
                      coefficients[-1L, "Pr(>|t|)"], 
                      decreasing=TRUE)[1L] <= alpha) 
          #a bit advanced, but basically we want to
