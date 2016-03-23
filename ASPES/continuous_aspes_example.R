@@ -54,6 +54,9 @@ incl_vars <- paste0(rep(c("x","z","w"), each = 5), 1:5)
 # 2) Delete any covariates with missing
 #    coefficients
 full_model_coef <- 
+  #Note that treat==0 observations are
+  #  automatically excluded since Ma
+  #  is missing for all such rows
   data[ , lm(Ma ~ ., data = .SD)$coefficients, 
         .SDcols = c("Ma", incl_vars)]
 
