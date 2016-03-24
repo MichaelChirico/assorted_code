@@ -93,6 +93,9 @@ while (TRUE){
        #Setting .SDcols allows us to exclude y, id, and treat,
        #  none of which are being considered for selection
        .SDcols = c("Ma", incl_vars)]
+  if (!length(incl_vars)) 
+    stop("No significant predictors of mediator; ",
+         "consider lowering alpha or getting better covariates")
 }
 
 # *****    PART 1B     *****
