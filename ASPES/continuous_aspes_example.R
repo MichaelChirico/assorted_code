@@ -115,12 +115,12 @@ data[ , CV_group := sample(rep_len(1:n_groups, .N))]
 # 4) repeat for all groups
 
 # Set index for slight speed-up
-setindex(data, CV_group)
+setkey(data, CV_group)
 data[ , Mp :=
         predict(
           #run the regression on the _rest_
           #  of the data, i.e., excluding this CV_group
-          data[CV_group != .BY$CV_group,
+          data[!.(.BY$CV_group),
                lm(Ma ~ ., data = .SD),
                .SDcols = c("Ma", incl_vars)],
           #use current group's data for prediction
