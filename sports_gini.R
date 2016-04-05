@@ -245,7 +245,6 @@ all_sports <-
             idcol="sport")
 
 cols <- c(NHL="black", NBA="red", MLB="blue", NFL="darkgreen")
-pchs <- c(NHL=1, NBA=2, MLB=3, NFL=5)
 ltys <- c(NHL=1, NBA=5, MLB=2, NFL=3)
 
 png("~/Desktop/sports_gini.png")
@@ -256,10 +255,10 @@ all_sports[ , plot(
 
 all_sports[ , {
   idx <- .BY$sport
-  points(season, gini, col = cols[idx], pch = pchs[idx])
+  points(season, gini, col = cols[idx])
   lines(season, five_yr_ma, col = cols[idx], 
         lwd = 3, lty = ltys[idx])},
   by = sport]
 legend("topright", legend = names(cols), col = cols,
-       lwd = 3, lty = ltys, pch = pchs)
+       lwd = 3, lty = ltys, pch = 1)
 dev.off()
