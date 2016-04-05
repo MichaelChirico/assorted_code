@@ -244,17 +244,22 @@ all_sports <-
   rbindlist(lapply(setNames(nm=sports), get), 
             idcol="sport")
 
+cols <- c(NHL="black", NBA="red", MLB="blue", NFL="darkgreen")
+pchs <- c(NHL=1, NBA=2, MLB=3, NFL=5)
+ltys <- c(NHL=1, NBA=5, MLB=2, NFL=3)
+
 png("~/Desktop/sports_gini.png")
 all_sports[ , plot(
   NA, ylim = range(gini), xlim = range(season), 
   xlab = "Season", ylab = "Gini Coefficient", las = 1,
   main = "Competitiveness in Major US Sports Leagues")]
 
-cols <- c(NHL="black", NBA="red", MLB="blue", NFL="darkgreen")
-
 all_sports[ , {
-  points(season, gini, col = cols[.BY$sport])
-  lines(season, five_yr_ma, col = cols[.BY$sport], lwd = 3)},
+  idx <- .BY$sport
+  points(season, gini, col = cols[idx], pch = pchs[idx])
+  lines(season, five_yr_ma, col = cols[idx], 
+        lwd = 3, lty = ltys[idx])},
   by = sport]
-legend("topright", legend = names(cols), col = cols, lwd = 3)
+legend("topright", legend = names(cols), col = cols,
+       lwd = 3, lty = ltys, pch = pchs)
 dev.off()
