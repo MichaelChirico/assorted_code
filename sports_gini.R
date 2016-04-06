@@ -293,6 +293,7 @@ setkey(season_2015, game_id)
 setindex(season_2015, name)
 ids <- season_2015[ , unique(game_id)]
 
+set.seed(1029)
 ginis <- sapply(s_length <- 10:161 * (15), function(nn)
   mean(replicate(
     1000,
