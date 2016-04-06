@@ -262,3 +262,53 @@ all_sports[ , {
 legend("topright", legend = names(cols), col = cols,
        lwd = 3, lty = ltys, pch = 1)
 dev.off()
+
+#Season-length Sensitivity
+## Approach: Calculate winning percentages based on 
+##   random subsets of the full baseball season, 
+##   calculate the Gini on these subseasons as above,
+##   repeat, and average to demonstrate any possible
+##   bias introduced by season length
+
+download.file("http://www.retrosheet.org/gamelogs/gl2015.zip", 
+              "season2015.zip")
+
+season_2015 <- 
+  fread("unzip -cq season2015.zip", header = FALSE,
+        select = paste0("V", c(1, 4, 7, 10:11)))
+setnames(season_2015, 
+         c("date", "away_n", "home_n", "away_s", "home_s"))
+season_2015[ , game_id := 1:.N]
+
+season_2015 <-
+  melt(season_2015, idvar = c("date", "game_id"),
+       measure.vars=list(c("away_n","home_n"),
+                         c("away_s","home_s")),
+       value.name = c("name", "score")
+       )[order(game_id, variable)
+         ][, variable := c("away", "home")[variable]]
+
+nn <- 240
+setkey(season_2015, game_id)
+setindex(season_2015, name)
+ids <- season_2015[ , unique(game_id)]
+
+ginis <- sapply(s_length <- 10:161 * (15), function(nn)
+  mean(replicate(
+    1000,
+    season_2015[.(idx <- sample(ids, nn)),
+                .(winner=name[which.max(score)]),
+                .(date,game_id)
+                ][ , .(wins=.N), winner
+                   ][season_2015[.(idx), .N, name],
+                     Gini(wins/i.N), on = c(winner = "name")])))
+  
+png("~/Desktop/season_length_gini.png")
+plot(s_length, ginis, type = "l", lwd = 3,
+     main = "How Season Length Affects Gini",
+     xlab = "Season Length", ylab = "Gini")
+abline(v = ol <- c(16 * 30/2, 82 * 30/2),
+       lty = 2, lwd = 2, col = "red")
+text(ol, ginis[s_length %in% ol],
+     c("NFL", "NBA/NHL"), pos = 4, col = "red")
+dev.off()
