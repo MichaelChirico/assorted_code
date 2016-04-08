@@ -1,4 +1,4 @@
-#Sports' Gini Coefficients
+#Competitiveness of the major sports
 rm(list=ls(all=T))
 gc()
 
@@ -11,6 +11,8 @@ URLs <-
     NBA="http://www.basketball-reference.com/leagues/",
     MLB="http://www.shrpsports.com/mlb/stand/",
     NFL="http://www.nfl.com/history/standings/1920")
+
+#Sports' Gini Coefficients ####
 
 ##NHL
 
@@ -263,7 +265,7 @@ legend("topright", legend = names(cols), col = cols,
        lwd = 3, lty = ltys, pch = 1)
 dev.off()
 
-#Season-length Sensitivity
+#Season-length Sensitivity ####
 ## Approach: Calculate winning percentages based on 
 ##   random subsets of the full baseball season, 
 ##   calculate the Gini on these subseasons as above,
@@ -313,3 +315,30 @@ abline(v = ol <- c(16 * 30/2, 82 * 30/2),
 text(ol, ginis[s_length %in% ol],
      c("NFL", "NBA/NHL"), pos = 4, col = "red")
 dev.off()
+
+#Turnover in the Best and Worst ####
+##NHL
+
+### getting full list of teams
+all_links <- 
+  unlist(lapply(links, function(u) html(u) %>%
+                  html_node("tbody") %>% 
+                  html_nodes("a") %>% html_attr("href")))
+
+all_links <- grep("teams/", all_links, value = TRUE)
+
+all_links <- 
+  paste0("http://www.hockeydb.com/",
+         gsub("^teams", "/ihdb/stats/leagues/seasons/teams", 
+              all_links))
+
+name_xpath = "/html/body/div[5]/div/div[1]/div[1]/a[4]"
+
+all_teams <- character(length(all_links))
+
+for (ii in 1:length(all_links)){
+  all_teams[ii] <- 
+    html(all_links[ii]) %>%
+    html_node(xpath = name_xpath) %>% 
+    html_text()
+}
