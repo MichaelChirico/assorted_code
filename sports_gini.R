@@ -17,7 +17,7 @@ URLs <-
 ##NHL
 
 ### Page with list of all season stats
-links <- html(URLs["NHL"]) %>%
+links <- read_html(URLs["NHL"]) %>%
   html_nodes(xpath='//*[@id="thisone"]') %>%
   html_nodes("a") %>% html_attr("href")
 
@@ -40,7 +40,7 @@ NHL <- data.table(season = integer(NN),
 
 for (ii in seq_along(links)){
   URL <- links[ii]
-  pg <- html(URL)
+  pg <- read_html(URL)
   yr <- as.integer(gsub(".*([0-9]{4})\\.html", "\\1", URL))
   g <- Gini(sapply(
     pg %>% html_node("tbody") %>% html_nodes("tr"),
@@ -66,7 +66,7 @@ NHL[ , five_yr_ma := NHL[max(1L, .BY$I - 2L):
 ##NBA
 
 ### Page with list of all season stats
-links <- html(URLs["NBA"]) %>%
+links <- read_html(URLs["NBA"]) %>%
   html_nodes(xpath='//*[@id="div_"]/table') %>%
   html_nodes("a") %>% html_attr("href")
 
@@ -88,7 +88,7 @@ table_css <-
 
 for (ii in seq_along(links)){
   URL <- links[ii]
-  pg <- html(URL)
+  pg <- read_html(URL)
   yr <- as.integer(gsub(".*([0-9]{4})\\.html", "\\1", URL))
   g <- Gini(unlist(lapply(
     table_css,
@@ -109,7 +109,7 @@ NBA[ , five_yr_ma := NBA[max(1L, .BY$I - 2L):
      by = .(I = 1:nrow(NBA))]
 
 ##MLB
-links <- html(URLs["MLB"]) %>% html_nodes("a") %>% html_attr("href") %>%
+links <- read_html(URLs["MLB"]) %>% html_nodes("a") %>% html_attr("href") %>%
   grep(pattern = "[0-9]{4}(finalcnf)*\\.htm", value = TRUE)
 
 links <- links[!duplicated(gsub("([0-9]{4})\\.htm",
@@ -129,7 +129,7 @@ MLB <- data.table(season = integer(NN),
 
 for (ii in seq_along(links)){
   URL <- links[ii]
-  pg <- html(URL)
+  pg <- read_html(URL)
   yr <- as.integer(gsub(".*([0-9]{4}).*", "\\1", URL))
   rcrds <- pg %>% html_nodes("table") %>% 
     `[`(if (yr %in% odd_yrs) 3:4 else 5:6) %>% 
@@ -151,7 +151,7 @@ MLB[ , five_yr_ma := MLB[max(1L, .BY$I - 2L):
      by = .(I = 1:nrow(MLB))]
 
 ##NFL
-links <- html(URLs["NFL"]) %>% html_nodes("option") %>% 
+links <- read_html(URLs["NFL"]) %>% html_nodes("option") %>% 
   html_attr("value") %>% unique() %>% as.integer()
 
 links <- paste0("http://www.nfl.com/history/standings/",
@@ -180,7 +180,7 @@ NFL <- data.table(season = integer(NN),
 
 for (ii in seq_along(links)){
   URL <- links[ii]
-  pg <- html(URL)
+  pg <- read_html(URL)
   yr <- as.integer(gsub(".*([0-9]{4}).*", "\\1", URL))
   tbl_css <- paste0("#history_", 
                     if (yr %in% odd_yrs) 1971 else 
@@ -219,7 +219,7 @@ tbl_css <- c("#AFC", "#NFC")
 
 for (ii in seq_along(links)){
   URL <- links[ii]
-  pg <- html(URL)
+  pg <- read_html(URL)
   yr <- as.integer(gsub(".*([0-9]{4}).*", "\\1", URL))
   g <- Gini(sapply(
     tbl_css,
@@ -321,7 +321,7 @@ dev.off()
 
 ### getting full list of teams
 all_links <- 
-  unlist(lapply(links, function(u) html(u) %>%
+  unlist(lapply(links, function(u) read_html(u) %>%
                   html_node("tbody") %>% 
                   html_nodes("a") %>% html_attr("href")))
 
@@ -338,7 +338,7 @@ all_teams <- character(length(all_links))
 
 for (ii in 1:length(all_links)){
   all_teams[ii] <- 
-    html(all_links[ii]) %>%
+    read_html(all_links[ii]) %>%
     html_node(xpath = name_xpath) %>% 
     html_text()
 }
