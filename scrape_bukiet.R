@@ -110,4 +110,4 @@ all_seasons[fread("mlb_scrape_ids.csv"),
 #   2011 HOU & PIT predicted to play 152 games
 #   2001 PHI predicted to play 163 games
 #   2000 MIA predicted to play 161 games
-all_seasons[w + l != 162, l := 162 - w]
+all_seasons[w + l != 162L, l := 162L - w]
