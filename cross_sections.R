@@ -12,11 +12,14 @@ library(animation)
 #  rod has endpoints at (-1, 0, 0) and (1, 0, 0)
 
 #parameters
-nn <- 30      #nodes on ceiling/floor
+nn <- 10      #nodes on ceiling/floor
 nn1 <- nn - 1 #really only use this
 th <- pi/6    #angle of intersection between 
               #floor and ceiling segments
 n_cross <- 20 #number of cross-sections to examine
+
+#colors, one to each ceiling node
+cols = sample(colors(), nn)
 
 saveGIF(sapply(
   #find cross sections evenly
@@ -29,7 +32,7 @@ saveGIF(sapply(
       (2*k1/nn1 - 1)*(1-lam) + lam*cos(th)*(2*k2/nn1-1)),
       #y coordinate depends only on k2
       rep(lam*sin(th)*(2*0:nn1/nn1 - 1), each = nn),
-      main = "Horizontal Cross Sections",
+      main = "Horizontal Cross Sections", col = rep(cols, each = nn),
       xlab = "x", ylab = "y", xlim = c(-1, 1), ylim = c(-1, 1), asp = 1)
     #floor rod
     segments(-1, 0, 1, 0, lty = 2)
