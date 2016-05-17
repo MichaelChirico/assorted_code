@@ -26,15 +26,15 @@ saveGIF(sapply(
     #indices: node numbers on floor (k1)/ceiling (k2)
     plot(outer(0:nn1, 0:nn1, function(k1, k2)
       #x coordinate depends on k1 & k2
-      (2*k1/nn1 - 1)*(1-lam) + lam*sin(th)*(2*k2/nn1-1)),
+      (2*k1/nn1 - 1)*(1-lam) + lam*cos(th)*(2*k2/nn1-1)),
       #y coordinate depends only on k2
-      rep(lam*cos(th)*(2*0:nn1/nn1 - 1), each = nn),
+      rep(lam*sin(th)*(2*0:nn1/nn1 - 1), each = nn),
       main = "Horizontal Cross Sections",
       xlab = "x", ylab = "y", xlim = c(-1, 1), ylim = c(-1, 1), asp = 1)
     #floor rod
     segments(-1, 0, 1, 0, lty = 2)
     #ceiling rod
-    segments(-sin(th), -cos(th), sin(th), cos(th), lty = 2)
+    segments(-cos(th), -sin(th), cos(th), sin(th), lty = 2)
     text(-1, 1, paste0(round(100*lam), "% to the Ceiling"), pos = 4)
   }),
   "cross_sections.gif")
