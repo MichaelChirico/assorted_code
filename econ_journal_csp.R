@@ -36,6 +36,10 @@ plot(NULL, xlim = c(1, 50), ylim = c(0, journals[ , max(Cited)]),
      xlab = "Order Statistic of Paper Citations",
      ylab = "# Citations")
 
+#Note: there's a bug in RStudio, so this plot will not
+#  render correctly on the RStudio Graphics Device.
+#  See https://github.com/Rdatatable/data.table/issues/1524 and 
+#  https://support.rstudio.com/hc/en-us/community/posts/208778048
 journals[order(cite_rank), 
          lines(cite_rank, Cited, lwd = 3, 
                col = cols[.BY$journal]),
