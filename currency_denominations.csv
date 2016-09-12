@@ -1,0 +1,80 @@
+currency,symbol,denomination,type,uncommon,image_url
+United States Dollar,USD,0.01,coin,,https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/US_One_Cent_Obv.png/1024px-US_One_Cent_Obv.png
+United States Dollar,USD,0.05,coin,,https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/US_Nickel_2013_Obv.png/1024px-US_Nickel_2013_Obv.png
+United States Dollar,USD,0.1,coin,,https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Dime_Obverse_13.png/1024px-Dime_Obverse_13.png
+United States Dollar,USD,0.25,coin,,https://upload.wikimedia.org/wikipedia/commons/4/44/2014_ATB_Quarter_Obv.png
+United States Dollar,USD,0.5,coin,TRUE,https://en.wikipedia.org/wiki/File:US_Half_Dollar_Obverse_2015.png
+United States Dollar,USD,1,banknote,,https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Onedolar2009series.jpg/800px-Onedolar2009series.jpg
+United States Dollar,USD,2,banknote,TRUE,https://upload.wikimedia.org/wikipedia/commons/c/c5/US_%242_obverse.jpg
+United States Dollar,USD,5,banknote,,https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/US_%245_Series_2006_obverse.jpg/800px-US_%245_Series_2006_obverse.jpg
+United States Dollar,USD,10,banknote,,https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/US10dollarbill-Series_2004A.jpg/800px-US10dollarbill-Series_2004A.jpg
+United States Dollar,USD,20,banknote,,https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/US20-front.jpg/800px-US20-front.jpg
+United States Dollar,USD,50,banknote,,https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/50_USD_Series_2004_Note_Front.jpg/800px-50_USD_Series_2004_Note_Front.jpg
+United States Dollar,USD,100,banknote,,https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/New100front.jpg/800px-New100front.jpg
+Japanese Yen,JPY,1,coin,,https://upload.wikimedia.org/wikipedia/commons/f/f5/1yen_showa64_obverse.jpg
+Japanese Yen,JPY,5,coin,,https://upload.wikimedia.org/wikipedia/commons/3/37/GoEnDamaScan.jpg
+Japanese Yen,JPY,10,coin,,https://upload.wikimedia.org/wikipedia/commons/a/a9/JuEnDamaEvergreenTreeWP.jpg
+Japanese Yen,JPY,50,coin,,https://upload.wikimedia.org/wikipedia/commons/b/b0/50_Yen_Vorderseite.jpg
+Japanese Yen,JPY,100,coin,,https://upload.wikimedia.org/wikipedia/commons/6/60/100_Yen_R%C3%BCckseite.jpg
+Japanese Yen,JPY,500,coin,,https://upload.wikimedia.org/wikipedia/commons/7/73/500_yen_obverse.jpg
+Japanese Yen,JPY,1000,banknote,,https://upload.wikimedia.org/wikipedia/commons/e/e8/1000_yen_banknote_2004.jpg
+Japanese Yen,JPY,5000,banknote,,https://upload.wikimedia.org/wikipedia/commons/9/9e/Series_E_5K_Yen_Bank_of_japan_note_-_front.jpg
+Japanese Yen,JPY,10000,banknote,,https://upload.wikimedia.org/wikipedia/commons/f/fe/Series_E_10K_Yen_Bank_of_Japan_note_-_front.jpg
+British Pound Sterling,GBP,0.01,coin,,https://upload.wikimedia.org/wikipedia/en/thumb/f/f3/British_one_penny_coin_2015_reverse.png/220px-British_one_penny_coin_2015_reverse.png
+British Pound Sterling,GBP,0.02,coin,,https://upload.wikimedia.org/wikipedia/en/thumb/b/bb/British_two_pence_coin_2015_reverse.png/220px-British_two_pence_coin_2015_reverse.png
+British Pound Sterling,GBP,0.05,coin,,https://upload.wikimedia.org/wikipedia/en/thumb/0/07/British_five_pence_coin_2015_reverse.png/220px-British_five_pence_coin_2015_reverse.png
+British Pound Sterling,GBP,0.1,coin,,https://upload.wikimedia.org/wikipedia/en/thumb/3/3c/British_ten_pence_coin_2015_reverse.png/150px-British_ten_pence_coin_2015_reverse.png
+British Pound Sterling,GBP,0.2,coin,,https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/British_twenty_pence_coin_2015_obverse.png/220px-British_twenty_pence_coin_2015_obverse.png
+British Pound Sterling,GBP,0.5,coin,,https://upload.wikimedia.org/wikipedia/en/thumb/5/52/British_fifty_pence_coin_2015_obverse.png/220px-British_fifty_pence_coin_2015_obverse.png
+British Pound Sterling,GBP,1,coin,,https://upload.wikimedia.org/wikipedia/en/thumb/a/a5/British_one_pound_coin_2015_obverse.png/220px-British_one_pound_coin_2015_obverse.png
+British Pound Sterling,GBP,2,coin,,https://upload.wikimedia.org/wikipedia/en/thumb/3/35/British_two_pound_coin_2015_obverse.png/220px-British_two_pound_coin_2015_obverse.png
+British Pound Sterling,GBP,5,banknote,,https://upload.wikimedia.org/wikipedia/en/5/5b/Bank_of_England_%C2%A35_obverse.jpg
+British Pound Sterling,GBP,10,banknote,,https://upload.wikimedia.org/wikipedia/en/9/97/Bank_of_England_%C2%A310_obverse.jpg
+British Pound Sterling,GBP,20,banknote,,https://upload.wikimedia.org/wikipedia/en/4/4b/Bank_of_England_%C2%A320_obverse.jpg
+British Pound Sterling,GBP,50,banknote,,https://upload.wikimedia.org/wikipedia/en/b/b9/Bank_of_England_%C2%A350_obverse.jpg
+Chinese Yuan,CNY,0.1,banknote,,http://i.imgur.com/a2b2LiN.jpg
+Chinese Yuan,CNY,0.1,coin,,http://i.imgur.com/QBWJ8WJ.jpg
+Chinese Yuan,CNY,0.5,banknote,,http://i.imgur.com/DDA2KMC.jpg
+Chinese Yuan,CNY,0.5,coin,,http://i.imgur.com/TjZOaNw.jpg
+Chinese Yuan,CNY,1,banknote,,http://i.imgur.com/RcRsBEG.jpg
+Chinese Yuan,CNY,1,coin,,http://i.imgur.com/tZEFlnn.jpg
+Chinese Yuan,CNY,5,banknote,,http://i.imgur.com/Ojboyab.jpg
+Chinese Yuan,CNY,10,banknote,,http://i.imgur.com/u1wezWn.jpg
+Chinese Yuan,CNY,20,banknote,,http://i.imgur.com/xuYHRQj.jpg
+Chinese Yuan,CNY,50,banknote,,http://i.imgur.com/NHXxHXu.jpg
+Chinese Yuan,CNY,100,banknote,,http://i.imgur.com/eY6mpLe.jpg
+Singapore Dollar,SGD,0.05,coin,,http://i.imgur.com/GyDTJqd.jpg
+Singapore Dollar,SGD,0.1,coin,,http://i.imgur.com/vGcKWCB.jpg
+Singapore Dollar,SGD,0.2,coin,,http://i.imgur.com/79l0jS5.jpg
+Singapore Dollar,SGD,0.5,coin,,http://i.imgur.com/bEVuHuw.jpg
+Singapore Dollar,SGD,1,coin,,http://i.imgur.com/27dJ0Tu.jpg
+Singapore Dollar,SGD,2,banknote,,http://i.imgur.com/EeT9Rfz.jpg
+Singapore Dollar,SGD,5,banknote,,http://i.imgur.com/TxyPnWO.jpg
+Singapore Dollar,SGD,10,banknote,,http://i.imgur.com/yshzmC9.jpg
+Singapore Dollar,SGD,50,banknote,,http://i.imgur.com/GmPTNPc.jpg
+Singapore Dollar,SGD,100,banknote,,http://i.imgur.com/cH0yuWu.jpg
+Singapore Dollar,SGD,500,banknote,,http://i.imgur.com/8Ot2PIZ.jpg
+Singapore Dollar,SGD,1000,banknote,,http://i.imgur.com/oQHop7I.jpg
+Hong Kong Dollar,HKD,0.2,coin,,http://i.imgur.com/334Gaqx.jpg
+Hong Kong Dollar,HKD,0.5,coin,,http://i.imgur.com/0TNJ5el.jpg
+Hong Kong Dollar,HKD,1,coin,,http://i.imgur.com/d15zeg5.jpg
+Hong Kong Dollar,HKD,2,coin,,http://i.imgur.com/OhFUQMM.jpg
+Hong Kong Dollar,HKD,5,coin,,http://i.imgur.com/T1bqIg2.jpg
+Hong Kong Dollar,HKD,10,banknote,,http://i.imgur.com/5b8H8pM.jpg
+Hong Kong Dollar,HKD,20,banknote,,http://i.imgur.com/Pfdx9ox.jpg
+Hong Kong Dollar,HKD,50,banknote,,http://i.imgur.com/E4KyBPG.jpg
+Hong Kong Dollar,HKD,100,banknote,,http://i.imgur.com/0QjQzVM.gif
+Hong Kong Dollar,HKD,500,banknote,,http://i.imgur.com/1Rv42ZY.jpg
+Hong Kong Dollar,HKD,1000,banknote,,http://i.imgur.com/4KAybSy.jpg
+Euro,EUR,0.01,coin,,http://imgur.com/pUfO7XN
+Euro,EUR,0.05,coin,,http://imgur.com/h7cnsUX
+Euro,EUR,0.1,coin,,http://imgur.com/YQ63S6C
+Euro,EUR,0.2,coin,,http://imgur.com/IbfKfOy
+Euro,EUR,0.5,coin,,http://i.imgur.com/x1TiRoP.jpg
+Euro,EUR,1,coin,,http://i.imgur.com/QL5hdRt.jpg
+Euro,EUR,2,coin,,http://i.imgur.com/hgu62BW.jpg
+Euro,EUR,5,banknote,,http://i.imgur.com/gIlepFq.jpg
+Euro,EUR,10,banknote,,http://i.imgur.com/GbTkItJ.jpg
+Euro,EUR,20,banknote,,http://i.imgur.com/dLdC45K.jpg
+Euro,EUR,50,banknote,,http://i.imgur.com/999S8Sr.jpg
+Euro,EUR,100,banknote,,http://i.imgur.com/CfICzGZ.jpg
