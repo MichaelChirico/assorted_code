@@ -3,6 +3,11 @@ library(data.table)
 
 #Top 10 journals by Impact Factor
 URLs <- 
+  #This could be more automated -- we could scrape this page:
+  #  http://citec.repec.org/search.html#journals
+  #  and extract URLs from the table with xpath:
+  #  //*[@id="sortable_example"]
+  #  under the Series column. Simple here for starters.
   c(Econometrica = "http://citec.repec.org/s/2015/wlyemetrp.html",
     QJE = "http://citec.repec.org/s/2015/oupqjecon.html",
     JEL = "http://citec.repec.org/s/2015/aeajeclit.html",
