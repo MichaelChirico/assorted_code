@@ -1,0 +1,26 @@
+---
+title: "Tangible Currency Exchange"
+runtime: shiny
+output: html_document
+---
+
+```{r exchange, echo = FALSE}
+library(data.table)
+denom = fread("currency_denominations_matched.csv")
+inputPanel(
+  selectInput("target", label = h3("Target Currency"),
+              choices = 
+                unique(denom[ , .(currency, symbol)]
+                       )[ , setNames(symbol, currency)],
+              selected = "JPY")
+)
+
+renderUI({
+  with(denom[symbol == input$target], {
+    tags$img(src = image_url[1L],
+             alt = paste(denomination[1L], symbol[1L]))
+    tags$img(src = match_image[1L],
+             alt = paste(match[1L], "USD"))
+  })
+})
+```
