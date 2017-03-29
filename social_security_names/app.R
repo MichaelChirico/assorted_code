@@ -2,33 +2,41 @@ library(data.table)
 #note: in order to get this to deploy to
 #  shinyapps, I had to use the CRAN
 #  version of data.table (don't think
-#  it makes a difference...)
+#  it makes a difference for code)
 
+#as created in social_security_initials.R
 full_data = fread('social_security_tabulated_by_year.csv',
                   key = 'birth,first,last',
+                  #to facilitate plotting
                   stringsAsFactors = TRUE)
 nms = c('first', 'last')
 full_data[ , (nms) := lapply(.SD, as.integer), .SDcols = nms]
 
+#split by birth year
 DTsplit = split(full_data, by = 'birth', keep.by = TRUE)
 
 plotdata = rbindlist(lapply(DTsplit, function(DT) {
+  #allow for ties by using frank
   DT[ , rnk := frank(-N, ties.method = 'min')]
   DT[rnk <= 10]}))
+#sort & key for faster plotting
 setkey(plotdata, birth)
+#pre-define colors for faster plotting
 plotdata[ , col := ifelse(rnk == 1L, 'red', 'black')]
 
 # Shiny Application Part
-
 xgrd = ygrd = seq(.5, 26.5, length.out = 27)
 plot_top = function(yr)
   plotdata[.(yr), {
     plot(NULL, xlim = c(.5, 26.5), ylim = c(.5, 26.5),
          xaxt = 'n', yaxt = 'n', ylab = '', xlab = '', asp = 1L)
+    #forcing asp = 1 made the axes appear too far from the plot
     text(1:26, 0, LETTERS)
     text(0, 1:26, LETTERS)
+    #could use grid, but segments allows more control
     segments(xgrd, .5, xgrd, 26.5)
     segments(0.5, ygrd, 26.5, ygrd)
+    #can't use points because pch = 10 turns into 1
     text(first, last, paste0(rnk), col = col, offset = 0)
   }]
 
@@ -39,6 +47,8 @@ ui <- shinyUI(fluidPage(
                                   min = plotdata[ , min(birth)],
                                   max = plotdata[ , max(birth)], step = 1,
                                   value = plotdata[sample(.N, 1), birth],
+                                  #otherwise thousands separator looks
+                                  #  weird for years
                                   sep = '')))
 ))
 
