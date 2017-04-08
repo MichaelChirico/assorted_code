@@ -1,4 +1,4 @@
-# Projects & Associated Files
+# Miscellaneous Projects & Associated Files
 
  - ASPES: R implementation of practice exercise demonstrating [Harvill and Moulton's Analysis of Symmetrically Predicted Endogenous Subgroups (ASPES)](https://ies.ed.gov/funding/grantsearch/details.asp?ID=1645)
    + `ASPES/`
