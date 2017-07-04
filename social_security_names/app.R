@@ -8,9 +8,7 @@ library(data.table)
 full_data = fread('social_security_tabulated_by_year.csv',
                   key = 'birth,first,last',
                   #to facilitate plotting
-                  stringsAsFactors = TRUE)
-nms = c('first', 'last')
-full_data[ , (nms) := lapply(.SD, as.integer), .SDcols = nms]
+                  stringsAsFactors = TRUE)[birth>=1900]
 
 #split by birth year
 DTsplit = split(full_data, by = 'birth', keep.by = TRUE)
@@ -19,6 +17,13 @@ plotdata = rbindlist(lapply(DTsplit, function(DT) {
   #allow for ties by using frank
   DT[ , rnk := frank(-N, ties.method = 'min')]
   DT[rnk <= 10]}))
+
+#reverse y-axis ordering to allow cascading down, not up
+plotdata[ , last := factor(last, levels = rev(LETTERS))]
+
+nms = c('first', 'last')
+plotdata[ , (nms) := lapply(.SD, as.integer), .SDcols = nms]
+
 #sort & key for faster plotting
 setkey(plotdata, birth)
 #pre-define colors for faster plotting
@@ -31,8 +36,10 @@ plot_top = function(yr)
     plot(NULL, xlim = c(.5, 26.5), ylim = c(.5, 26.5),
          xaxt = 'n', yaxt = 'n', ylab = '', xlab = '', asp = 1L)
     #forcing asp = 1 made the axes appear too far from the plot
-    text(1:26, 0, LETTERS)
-    text(0, 1:26, LETTERS)
+    text(1:26, 27, LETTERS)
+    text(0, 26:1, LETTERS)
+    mtext(side = 3L, 'First Initial')
+    text(-1.5, 13, 'Last\nInitial')
     #could use grid, but segments allows more control
     segments(xgrd, .5, xgrd, 26.5)
     segments(0.5, ygrd, 26.5, ygrd)
@@ -41,7 +48,7 @@ plot_top = function(yr)
   }]
 
 ui <- shinyUI(fluidPage(
-  titlePanel("Most Common Initials by Birth Year"),
+  titlePanel("Top 10 Most Common Initials by Birth Year"),
   fluidRow(column(12, plotOutput("chart", height = "600px"))),
   fluidRow(column(12, sliderInput("yr", "Year:", width = "100%",
                                   min = plotdata[ , min(birth)],
