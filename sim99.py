@@ -138,7 +138,7 @@ def simulate_round(id = 0, verbose = False):
     # initialize with info from "play by nature"
     value_history = [game_value]
     card_history = [top_card]
-    player_history = []
+    player_history = [-1]
 
     game_continues = True
     while game_continues:
