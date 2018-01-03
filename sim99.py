@@ -1,3 +1,10 @@
+# for command-line arguments
+from sys import argv
+game_end = int(argv[1])
+n_players = int(argv[2])
+cards_in_hand = int(argv[3])
+n_simulations = int(argv[4])
+
 from random import shuffle
 # use heapq to more efficiently
 #   replace played cards and re-sort hands
@@ -55,9 +62,6 @@ def play_card(card, V, M):
     elif card == 4:
         return (-10, True)
 
-game_end = 99
-n_players = 5
-cards_in_hand = 3
 # for initial decision -- trying
 #   to dump the largest possible non-special card;
 #   use negative values as a pat on the back to heapq
@@ -166,8 +170,7 @@ def simulate_round(id = 0, verbose = False):
                 # no cards to play -> game over
                 except IndexError:
                     if verbose:
-                        print ('Player %d Loses!' %
-                               current_player)
+                        print 'Player %d Loses!' % current_player
                     game_continues = False
                     value_history += [None]
                     card_history += [None]
@@ -203,7 +206,7 @@ def simulate_round(id = 0, verbose = False):
     DF.index.names = ['turn_id']
     return DF
 
-n_simulations = 50000
+# where's rbindlist(lapply()) when you need it
 simulations = pd.concat(
   [simulate_round(i) for i in range(n_simulations)],
   axis = 0
