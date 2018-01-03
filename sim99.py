@@ -8,10 +8,10 @@ import pandas as pd
 import numpy as np
 
 def create_and_shuffle(n_decks = 2):
-    one_suit = ['2', '3', '4', '5', '6', '7',
-                '8', '9', '-', 'J', 'Q', 'K', 'A']
     # Use * for Joker and - for 10
     #   to maintain single-width avatars for cards
+    one_suit = ['2', '3', '4', '5', '6', '7',
+                '8', '9', '-', 'J', 'Q', 'K', 'A']
     one_deck = one_suit * 4 + ['*'] * 2
     all_decks = one_deck * n_decks
     shuffle(all_decks)
@@ -32,30 +32,28 @@ def play_card(card, V, M):
         else:
             # can't play high card; abandon
             return ('NEXT_CARD', None)
+    # Ace -- if 11 can be played, do so;
+    #        if not and 1 can be played, do so;
+    #        otherwise, play a different card
     elif card == 0:
-        # Ace -- if 11 can be played, do so;
-        #        if not and 1 can be played, do so;
-        #        otherwise, play a different card
         if V + 11 <= M:
             return (11, False)
         elif V + 1 <= M:
             return (1, False)
         else:
             return ('NEXT_CARD', None)
+    # Joker: game_value -> game_end
     elif card == 1:
-        # Joker: game_value -> game_end
         return (M - V, False)
+    # 9: game_value unchanged
     elif card == 2:
-        # 9: game_value unchanged
         return (0, False)
+    # Jack: reverse direction of turns
     elif card == 3:
-        # Jack: reverse direction of turns
         return (0, True)
+    # 10: decrement game_value by 10
     elif card == 4:
-        # 10: decrement game_value by 10
         return (-10, True)
-    else:
-        raise Exception('HOW DID YOU GET HERE?')
 
 game_end = 99
 n_players = 5
@@ -80,16 +78,17 @@ card_from_val = ['Q/K', '', '8', '7', '6', '5', '4', '3',
                  '2', '', 'A', 'Joker', '9', 'J', '10']
 
 # long to have typed deep in nested statements
-update_str = 'Player %d played %s; Game Value = %d; play moves to %d'
+update_str = 'Player %d played %s; ' + \
+             'Game Value = %d; play moves to %d'
 
 columns = ['player_id', 'card_value', 'game_value']
+
 def simulate_round(id = 0, verbose = False):
     # shuffle, reset score,
     deck = create_and_shuffle()
     if verbose:
         print 'Full Shuffle:\n' + ''.join(deck)
-    game_value = 0
-    value_history = []
+
     # use list comprehension to avoid mis-step:
     # https://stackoverflow.com/q/240178/
     hands = [[] for _ in range(n_players)]
@@ -107,12 +106,36 @@ def simulate_round(id = 0, verbose = False):
             hq.heappush(hands[player_i], card_values[deck.pop()])
     if verbose:
         print 'Hands as Dealt\n' + str(hands)
-    card_history = []
 
-    current_player = 0
+    # play the top card of the deck to initialize
+    top_card = card_values[deck.pop()]
+    game_value, reverse = play_card(top_card, 0, game_end)
+
+    if verbose:
+        print 'DEALER PLAYS: %s; Initial Game Value: %d' % \
+                (card_from_val[top_card + 10], game_value)
+    # in the event of an intial Jack draw, it's as
+    #   if the dealer played a Jack, and play is reversed
+    #   to the dealer's "right" (here, since initial player
+    #   is 0, it's as if player (n_players - 1) is the dealer
+    #   and hence player (n_players - 2) is to their "right");
+    #   note that this is somewhat arbitrary (since we're free
+    #   to define which direction is "clockwise" here), but has
+    #   a minor effect on the win % of each player (in particular,
+    #   it serves to undermine somewhat the first mover advantage)
+    # toggle increment by -1 whenever a Jack is played
+    if reverse:
+        current_player = n_players - 2
+        increment = -1
+    else:
+        current_player = 0
+        increment = 1
+
+    # initialize with info from "play by nature"
+    value_history = [game_value]
+    card_history = [top_card]
     player_history = []
-    # toggle by -1 whenever a Jack is played
-    increment = 1
+
     game_continues = True
     while game_continues:
         player_history += [current_player]
@@ -180,9 +203,10 @@ def simulate_round(id = 0, verbose = False):
     DF.index.names = ['turn_id']
     return DF
 
-n_simulations = 10000
+n_simulations = 50000
 simulations = pd.concat(
   [simulate_round(i) for i in range(n_simulations)],
   axis = 0
 )
-simulations.to_csv('out.csv')
+simulations.to_csv('sim_%d_max_%d_players_%d_cards.csv' %
+                     (game_end, n_players, cards_in_hand))
