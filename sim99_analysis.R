@@ -74,3 +74,18 @@ sims[ , .(n_special = sum(card_value > 0, na.rm = TRUE)),
                 main = 'How Many Specials Will I Get to Play?')
            dev.off()
          }]
+
+# how many games end without a single special card being played?
+#   (drop games that end before any cards are "actively" played
+sims[ , if (.N > 2) all(card_value < 0, na.rm = TRUE),
+      keyby = game_id][ , mean(V1)]
+
+# as the first player to drop a trick,
+#   how likely are you to lose?
+sims[ , {
+  trick_idx = card_value > 0
+  if (.N > 2L & any(trick_idx, na.rm = TRUE)) {
+    first_trick = which.max(trick_idx)
+    player_id[.N] == player_id[first_trick]
+  }
+}, keyby = game_id][ , mean(V1)]
