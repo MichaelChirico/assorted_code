@@ -124,21 +124,21 @@ server <- shinyServer(function(input, output) {
       text(artillery, barrage, pos = rep(c(1L, 3L), length.out = .N),
            col = pt_col, prettyNum(intercepts * damage_barrage, big.mark = ','))
 
+      abline(v = 0:max_artillery, h = 0:max_barrage,
+           lwd = .5, col = 'gray')
+      abline(v = 0, h = 0)
+
       legend('bottomleft',
              legend = c('Feasible Pair', 'Optimal Pair',
                         'Optimal Pair (+n Downed Turrets)',
                         'Continuous Optimum', 'Least Damage', 'Most Damage',
-                        'Energy Budget', 'Energy Budget with Downed Turrets'),
+                        'Energy Budget', 'Energy Budget (+n Downed Turrets)'),
              col = c('black', 'red', '#FF000077', 'darkblue',
                      cols[1L], cols[.N], 'black', '#00000020'),
              lwd = c(NA, NA, NA, NA, 1L, 1L, 3L, 3L),
              pch = c(19L, 19L, 19L, 0L, NA, NA, NA, NA))
     }]
-    lims = par('usr')
 
-    abline(v = 0:max_artillery, h = 0:max_barrage,
-           lwd = .5, col = 'gray')
-    abline(v = 0, h = 0)
     abline(v = -new_zero_artillery, h = -new_zero_barrage, lty = 2L, lwd = .75)
     points(cont_star$artillery_star, cont_star$barrage_star,
            pch = 0L, col = 'darkblue')
