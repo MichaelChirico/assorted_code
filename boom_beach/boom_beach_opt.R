@@ -1,4 +1,6 @@
 library(shiny)
+library(magrittr)
+library(data.table)
 library(viridis)
 
 # variable explanations:
@@ -7,7 +9,8 @@ library(viridis)
 #  - initial_{a, b}: initial energy cost
 #  - marginal_{a, b}: marginal cost (how much does cost increase)
 
-# change-of-variables so that quadratic energy surface is at the origin
+# change-of-variables so that quadratic energy surface is
+#   at the origin of the transformed space
 new_zero = function(initial, marginal) .5*(2*initial - marginal)/marginal
 
 # under change-of-variables, energy budget becomes this "shadow" energy
@@ -38,7 +41,6 @@ energy_cost = function(n, initial, marginal) {
 }
 
 # using this ability only, how many times can it be fired?
-#   (basically discretizing a quadratic solution)
 max_alone = function(energy, initial, marginal, round = TRUE) {
   b = initial/marginal - .5
   true = sqrt(b^2 + 2*energy/marginal) - b
@@ -54,6 +56,7 @@ ui <- shinyUI(pageWithSidebar(
   headerPanel('Maximizing Damage between Artillery & Barrage Salvos'),
   sidebarPanel(
     numericInput('energy', 'Energy Budget', 83, min = 1),
+    numericInput('energy_delta', 'Energy Increment', 3, min = 1),
     h1('Artillery'),
     numericInput('damage_artillery', 'Damage', 9396, min = 0),
     numericInput('initial_artillery', 'First Artillery Cost', 3, min = 0),
@@ -72,23 +75,20 @@ server <- shinyServer(function(input, output) {
   output$plot = renderPlot({
     for (v in names(input))
       assign(v, input[[v]])
-    max_barrage = max_alone(energy, initial_barrage, marginal_barrage)
-    max_artillery = max_alone(energy, initial_artillery, marginal_artillery)
+    max_artillery = max_alone(energy, initial_artillery, marginal_artillery) + 1
+    max_barrage = max_alone(energy, initial_barrage, marginal_barrage) + 1
 
-    barrages = 0:max_barrage
-    artilleries =
-      max_alone(energy -
-                  energy_cost(barrages, initial_barrage, marginal_barrage),
-                initial_artillery, marginal_artillery)
-    artilleries_new = setdiff(0:max_artillery, artilleries)
-    barrages_new =
-      max_alone(energy -
-                  energy_cost(artilleries_new,
-                              initial_artillery, marginal_artillery),
-                initial_barrage, marginal_barrage)
-    barrages = sort(c(barrages, barrages_new))
-    artilleries = sort(c(artilleries, artilleries_new), decreasing = TRUE)
-    n = length(artilleries)
+    DT = CJ(artillery = 0:max_artillery,
+            barrage = 0:max_barrage)
+    DT[ , damage := damage(artillery, damage_artillery,
+                           barrage, damage_barrage)]
+    DT[ , cost :=
+          energy_cost(artillery, initial_artillery, marginal_artillery) +
+          energy_cost(barrage, initial_barrage, marginal_barrage)]
+    DT[ , frontier := FALSE]
+    DT[cost <= energy, frontier := barrage == max(barrage), by = artillery]
+    DT[cost <= energy, frontier :=
+         frontier | artillery == max(artillery), by = barrage]
 
     new_zero_artillery = new_zero(initial_artillery, marginal_artillery)
     new_zero_barrage = new_zero(initial_barrage, marginal_barrage)
@@ -97,51 +97,87 @@ server <- shinyServer(function(input, output) {
                                    new_zero_artillery, new_zero_barrage,
                                    marginal_artillery, marginal_barrage)
 
-    max_idx = which.max(damage(artilleries, damage_artillery,
-                               barrages, damage_barrage))
-    pt_col = rep('black', n)
-    pt_col[max_idx] = 'red'
 
-    plot(artilleries, barrages, pch = 19L, las = 1L, col = pt_col,
-         xlim = c(-new_zero_artillery, artilleries[1L] + 1),
-         ylim = c(-new_zero_barrage, max_barrage + 1),
-         xlab = '# Artillery', ylab = '# Barrage')
+    DT[(frontier), {
+      max_idx = which.max(damage(artillery, damage_artillery,
+                                 barrage, damage_barrage))
+
+      # "current" maximal states, for efficiency when updating
+      #   maxima w.r.t. additional turret bounty
+      AA <<- artillery[max_idx]
+      BB <<- barrage[max_idx]
+
+      pt_col = rep('black', .N)
+      pt_col[max_idx] = 'red'
+
+      plot(artillery, barrage, pch = 19L, las = 1L, col = pt_col,
+           xlim = c(-new_zero_artillery, max_artillery),
+           ylim = c(-new_zero_barrage, max_barrage),
+           xlab = '# Artillery', ylab = '# Barrage')
+
+      cols = viridis(.N)
+      damage_ratio = damage_artillery/damage_barrage
+      intercepts = barrage + damage_ratio*artillery
+      ranks = frank(intercepts)
+      for (ii in seq_len(.N))
+        abline(intercepts[ii], -damage_ratio, col = cols[ranks[ii]])
+      text(artillery, barrage, pos = rep(c(1L, 3L), length.out = .N),
+           col = pt_col, prettyNum(intercepts * damage_barrage, big.mark = ','))
+
+      legend('bottomleft',
+             legend = c('Feasible Pair', 'Optimal Pair',
+                        'Optimal Pair (+n Downed Turrets)',
+                        'Continuous Optimum', 'Least Damage', 'Most Damage',
+                        'Energy Budget', 'Energy Budget with Downed Turrets'),
+             col = c('black', 'red', '#FF000077', 'darkblue',
+                     cols[1L], cols[.N], 'black', '#00000020'),
+             lwd = c(NA, NA, NA, NA, 1L, 1L, 3L, 3L),
+             pch = c(19L, 19L, 19L, 0L, NA, NA, NA, NA))
+    }]
     lims = par('usr')
-    abline(v = floor(lims[1L]):ceiling(lims[2L]),
-           h = floor(lims[3L]):ceiling(lims[4L]),
+
+    abline(v = 0:max_artillery, h = 0:max_barrage,
            lwd = .5, col = 'gray')
     abline(v = 0, h = 0)
-    abline(v = -new_zero_artillery,
-           h = -new_zero_barrage,
-           lty = 2L, lwd = .75)
+    abline(v = -new_zero_artillery, h = -new_zero_barrage, lty = 2L, lwd = .75)
     points(cont_star$artillery_star, cont_star$barrage_star,
            pch = 0L, col = 'darkblue')
 
-    aa = seq(0, max_alone(energy, initial_artillery,
-                          marginal_artillery, round = FALSE),
-             length.out = 100L)
-    bb = max_alone(energy - energy_cost(aa, initial_artillery,
-                                        marginal_artillery),
-                   initial_barrage, marginal_barrage, round = FALSE)
-    lines(aa, bb, lwd = 3L)
+    # total energy required for the maximal depicted combination
+    max_e =
+      energy_cost(max_artillery, initial_artillery, marginal_artillery) +
+      energy_cost(max_barrage, initial_barrage, marginal_barrage)
+    # number of turrets to destroy to reach this energy
+    max_n = (max_e - energy)/energy_delta
 
-    cols = viridis(n)
-    damage_ratio = damage_artillery/damage_barrage
-    intercepts = barrages + damage_ratio*artilleries
-    ranks = rank(intercepts)
-    for (ii in seq_len(n))
-      abline(intercepts[ii], -damage_ratio,
-             col = cols[ranks[ii]])
-    text(artilleries, barrages, pos = rep(c(1L, 3L), length.out = n),
-         col = pt_col, prettyNum(intercepts * damage_barrage, big.mark = ','))
+    for (n_turrets in 0:max_n) {
+      ee = energy + energy_delta * n_turrets
+      spare_energy = ee -
+        energy_cost(AA, initial_artillery, marginal_artillery) -
+        energy_cost(BB, initial_barrage, marginal_barrage)
+      aa = seq(0, max_alone(ee, initial_artillery,
+                            marginal_artillery, round = FALSE),
+               length.out = 100L)
+      bb = max_alone(ee - energy_cost(aa, initial_artillery,
+                                      marginal_artillery),
+                     initial_barrage, marginal_barrage, round = FALSE)
+      col = if (n_turrets == 0L) 'black' else '#00000020'
+      lines(aa, bb, lwd = 3L, col = col)
 
-    legend('bottomleft',
-           legend = c('Feasible Pair', 'Optimal Pair', 'Continuous Optimum',
-                      'Least Damage', 'Most Damage', 'Energy Budget'),
-           col = c('black', 'red', 'darkblue',
-                   cols[1L], cols[n], 'black'),
-           lwd = c(NA, NA, NA, 1L, 1L, 3L),
-           pch = c(19L, 19L, 0L, NA, NA, NA))
+      if (n_turrets > 0L) {
+        DT[cost <= ee, {
+          idx = which.max(damage)
+          if (!identical(c(artillery[idx], barrage[idx]), c(AA, BB))) {
+            AA <<- artillery[idx]
+            BB <<- barrage[idx]
+            points(AA, BB, pch = 19L, col = '#FF000077')
+            text(AA, BB, paste0('+', n_turrets),
+                 pos = 3L, col = '#FF000077', xpd = TRUE)
+          }
+        }]
+      }
+    }
+
   })
 })
 
