@@ -1,5 +1,4 @@
 library(shiny)
-library(magrittr)
 library(data.table)
 library(viridis)
 
@@ -73,8 +72,10 @@ ui <- shinyUI(pageWithSidebar(
 
 server <- shinyServer(function(input, output) {
   output$plot = renderPlot({
-    for (v in names(input))
+    for (v in names(input)) {
+      validate(need(is.integer(input[[v]]), 'Please enter whole numbers only.'))
       assign(v, input[[v]])
+    }
     max_artillery = max_alone(energy, initial_artillery, marginal_artillery) + 1
     max_barrage = max_alone(energy, initial_barrage, marginal_barrage) + 1
 
